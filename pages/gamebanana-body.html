@@ -1,0 +1,45 @@
+<h3>CPU thread scheduling for Everwind on older CPUs</h3>
+<p>EverwindFXCore is a small DLL that loads with the game and changes how Windows hands out CPU time to Everwind's threads. It doesn't touch graphics settings, game files or saves. It is a port of my Windrose mod, WindroseFXCore, to Everwind (Unreal Engine 5.5).</p>
+<p><b>Beta, and an honest one:</b> the mod loads and tunes the game's threads as designed, but its effect on frame rate has not been measured in isolation yet. On my PC the big win came from two in-game settings, not from the DLL.</p>
+
+<h3>First: check these two settings</h3>
+<p>Measured on an FX-8350 with a Radeon RX 6600 at 1080p with a 60 FPS limit:</p>
+<ul>
+<li><b>Frame Generation on:</b> 30 real FPS (shown as 60), GPU 59%</li>
+<li><b>Frame Generation off, native resolution:</b> 55.6 average, dips to 47, GPU 91%</li>
+<li><b>Frame Generation off, XeSS upscaling on Quality:</b> 59.5 average, lowest 52, GPU 73%</li>
+</ul>
+<p>Frame Generation with a 60 FPS limit renders only 30 real frames, because the limit applies to the displayed frames. On a 60 Hz display, turn it off. If your graphics card is near 100%, use XeSS upscaling on Quality. You don't need this mod for either of those.</p>
+
+<h3>What the mod changes</h3>
+<ul>
+<li><b>Exclusive game module</b> (experimental, on by default). The GameThread, the busiest frame thread in Everwind, gets a whole AMD FX module or physical core to itself. Every other thread in the game is kept off it. Needs 8 or more logical processors.</li>
+<li><b>Keeps the frame threads apart.</b> The game, render and RHI threads each prefer their own core or module.</li>
+<li><b>Keeps loading work out of the way.</b> Asset streaming and decompression run on the other cores.</li>
+<li><b>Protects the audio thread.</b> The audio mixer gets its own preferred core and high priority.</li>
+<li><b>Steadier frame pacing.</b> 0.5 ms timer resolution, Above Normal priority for the frame threads, and no Windows power throttling for the game.</li>
+<li><b>Optional audio buffer fix</b> (off by default). Carried over from the Windrose mod; not needed or tested in Everwind on my PC.</li>
+</ul>
+<p><b>Be realistic:</b> at best it steadies frame times on CPUs where threads fight over shared cores. It won't help if your graphics card is the limit.</p>
+
+<h3>Install</h3>
+<ol>
+<li>In Steam, right-click Everwind, then Manage, then Browse local files.</li>
+<li>Extract the zip into that folder. <b>version.dll</b> and <b>EverwindFXCore.ini</b> end up in <b>skyverse\Binaries\Win64</b>.</li>
+<li>Start the game. An <b>EverwindFXCore.log</b> appears next to the DLL and shows your CPU and the threads it adjusted. No log means it didn't load.</li>
+</ol>
+<p>Every fix has its own switch in EverwindFXCore.ini, so you can turn things off one at a time and compare.</p>
+
+<h3>Uninstall</h3>
+<p>If you turned on the audio buffer fix, set AudioBufferFix=0 and start the game once. Then delete version.dll, EverwindFXCore.ini, EverwindFXCore.log and EverwindFXCore.state from skyverse\Binaries\Win64.</p>
+
+<h3>Good to know</h3>
+<ul>
+<li>Everwind had no anti-cheat in its install folder when this was released (November 2026). If that changes, remove the DLL before playing online.</li>
+<li>It conflicts with any other mod that also loads through version.dll.</li>
+<li>Please post your CPU, GPU and log in the comments, with FPS for Enabled=1 and Enabled=0 in the same spot.</li>
+</ul>
+
+<h3>How this mod was made</h3>
+<p>The C code, this page's text and the images were written with an AI assistant, Claude (Anthropic). I tested it in the game on my own PC (AMD FX-8350, Radeon RX 6600), and the measurements above come from that testing.</p>
+<p>Full source code (MIT license): <a href="https://github.com/mcirish3/EverwindFXCore">github.com/mcirish3/EverwindFXCore</a></p>

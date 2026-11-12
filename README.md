@@ -56,7 +56,7 @@ CPU into a new one, and it can't help if your graphics card is the limit.
 
 ## Install
 
-1. Download the latest zip from [Releases](../../releases).
+1. Download the latest zip from [Nexus Mods](https://www.nexusmods.com/everwind/mods/18) or [Releases](../../releases).
 2. In Steam, right-click **Everwind → Manage → Browse local files**.
 3. Extract the zip into that folder. The files land in `skyverse\Binaries\Win64\`, next to
    `Everwind-Win64-Shipping.exe`:
